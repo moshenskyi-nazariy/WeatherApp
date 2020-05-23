@@ -1,4 +1,4 @@
-package com.example.weatherapp
+package com.example.weatherapp.location
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -15,14 +15,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.weatherapp.R
+import com.example.weatherapp.custom.CurrentWeatherView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
 class LocationFragment : Fragment() {
-    private val locationRequestCode = 1000
+    private var location: Location? = null
 
     private lateinit var cityNameTextView: TextView
+    private lateinit var currentWeatherView: CurrentWeatherView
     private lateinit var loadingBar: ProgressBar
 
     private lateinit var viewModel: LocationViewModel
@@ -40,22 +44,42 @@ class LocationFragment : Fragment() {
 
     private fun initUi(root: View) {
         cityNameTextView = root.findViewById(R.id.city_name_tv)
+        currentWeatherView = root.findViewById(R.id.current_weather_view)
+
         loadingBar = root.findViewById(R.id.loading_bar)
         loadingBar.visibility = VISIBLE
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
+        initViewModel()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
 
         if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            && checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            && checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+        ) {
             requestLocationPermissions()
         } else {
             lookupLocation()
         }
+    }
+
+    private fun initViewModel() {
+        viewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
+        viewModel.error.observe(viewLifecycleOwner, Observer {
+            Toast.makeText(activity, it, Toast.LENGTH_LONG).show()
+        })
+        viewModel.result.observe(viewLifecycleOwner, Observer {
+            currentWeatherView.setWeather(it)
+        })
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            if (isLoading) {
+                loadingBar.visibility = VISIBLE
+            } else {
+                loadingBar.visibility = GONE
+            }
+        })
     }
 
     private fun requestLocationPermissions() {
@@ -64,7 +88,7 @@ class LocationFragment : Fragment() {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ),
-            locationRequestCode
+            LOCATION_REQUEST_CODE
         )
     }
 
@@ -78,10 +102,11 @@ class LocationFragment : Fragment() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray) {
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if (requestCode == locationRequestCode) {
+        if (requestCode == LOCATION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 lookupLocation()
             } else {
@@ -105,7 +130,8 @@ class LocationFragment : Fragment() {
     }
 
     private fun onLocationUpdateSuccess(location: Location) {
-        loadingBar.visibility = GONE
+        this.location = location
+        viewModel.getWeather(location.latitude, location.longitude)
 
         val cityList = Geocoder(activity).getFromLocation(location.latitude, location.longitude, 1)
         if (cityList.isNotEmpty()) {
@@ -114,6 +140,8 @@ class LocationFragment : Fragment() {
     }
 
     companion object {
+        const val LOCATION_REQUEST_CODE = 1000
+
         fun newInstance() = LocationFragment()
     }
 

@@ -16,10 +16,30 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildConfigField "String", "API_KEY", "\"0c8c8741f945afa19970853b4319a4c0\""
+            buildConfigField "String", "BASE_URL", "\"https://api.openweathermap.org/data/2.5/\""
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildConfigField "String", "API_KEY", "0c8c8741f945afa19970853b4319a4c0"
+            buildConfigField "String", "BASE_URL", "\"https://api.openweathermap.org/data/2.5/\""
         }
     }
 
@@ -35,5 +55,19 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    // Retrofit & additional libs
+    implementation "com.squareup.retrofit2:converter-gson:2.8.1"
+    implementation "com.squareup.retrofit2:retrofit:2.8.1"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.14.7"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.8.1"
+
+    // RxJava
+    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
+    implementation "io.reactivex.rxjava2:rxjava:2.2.19"
+
+    // Glide
+    implementation "com.github.bumptech.glide:glide:4.10.0"
+    annotationProcessor "com.github.bumptech.glide:compiler:4.10.0"
 }

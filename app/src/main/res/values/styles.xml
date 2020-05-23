@@ -8,4 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="CurrentWeatherView">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_margin">@dimen/ui_spacing_single</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/location_add_ons_text_size</item>
+    </style>
+
 </resources>

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="location_text_size">32sp</dimen>
+    <dimen name="location_add_ons_text_size">16sp</dimen>
     <dimen name="ui_spacing_double">16dp</dimen>
+    <dimen name="corner_radius">8dp</dimen>
+    <dimen name="ui_spacing_single">8dp</dimen>
+    <dimen name="weather_image_size">48dp</dimen>
 </resources>
