@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">WeatherApp</string>
     <string name="weekly_forecast">Weekly Forecast</string>
-    <string name="temperature_template">%f &#xb0;F</string>
+    <string name="temperature_template">%d &#xb0;F</string>
     <string name="humidity_template">%d %%</string>
     <string name="pressure_template">%d hPa</string>
 </resources>

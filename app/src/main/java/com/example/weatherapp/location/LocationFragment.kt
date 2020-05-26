@@ -10,6 +10,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -19,18 +20,21 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.R
 import com.example.weatherapp.custom.CurrentWeatherView
+import com.example.weatherapp.forecast.ForecastFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
 class LocationFragment : Fragment() {
-    private var location: Location? = null
+    private var latitude: Double? = null
+    private var longitude: Double? = null
 
     private lateinit var cityNameTextView: TextView
     private lateinit var currentWeatherView: CurrentWeatherView
     private lateinit var loadingBar: ProgressBar
+    private lateinit var nextButton: Button
 
     private lateinit var viewModel: LocationViewModel
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var fusedLocationClient: FusedLocationProviderClient? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +42,9 @@ class LocationFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.location_fragment, container, false)
         initUi(root)
+
+        longitude = savedInstanceState?.getDouble(LONGITUDE_KEY)
+        latitude = savedInstanceState?.getDouble(LATITUDE_KEY)
 
         return root
     }
@@ -48,20 +55,53 @@ class LocationFragment : Fragment() {
 
         loadingBar = root.findViewById(R.id.loading_bar)
         loadingBar.visibility = VISIBLE
+
+        nextButton = root.findViewById(R.id.weekly_forecast)
+        nextButton.setOnClickListener {
+            navigateToNextFragment()
+        }
+    }
+
+    private fun navigateToNextFragment() {
+        if (latitude != null && longitude != null) {
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.replace(
+                    R.id.container,
+                    ForecastFragment.newInstance(
+                        latitude!!,
+                        longitude!!,
+                        cityNameTextView.text.toString()
+                    )
+                )?.commit()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         initViewModel()
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
+        if (latitude == null && longitude == null) {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
 
-        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            && checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-        ) {
-            requestLocationPermissions()
+            if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                && checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+            ) {
+                requestLocationPermissions()
+            } else {
+                lookupLocation()
+            }
         } else {
-            lookupLocation()
+            viewModel.getWeather(latitude!!, longitude!!)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        if (latitude != null && longitude != null) {
+            outState.putDouble(LATITUDE_KEY, latitude!!)
+            outState.putDouble(LONGITUDE_KEY, longitude!!)
         }
     }
 
@@ -116,7 +156,7 @@ class LocationFragment : Fragment() {
     }
 
     private fun lookupLocation() {
-        fusedLocationClient.lastLocation
+        fusedLocationClient!!.lastLocation
             .addOnSuccessListener(activity!!, this::onLocationUpdateSuccess)
             .addOnFailureListener(this::onLocationUpdateFailure)
     }
@@ -130,7 +170,9 @@ class LocationFragment : Fragment() {
     }
 
     private fun onLocationUpdateSuccess(location: Location) {
-        this.location = location
+        latitude = location.latitude
+        longitude = location.longitude
+
         viewModel.getWeather(location.latitude, location.longitude)
 
         val cityList = Geocoder(activity).getFromLocation(location.latitude, location.longitude, 1)
@@ -141,6 +183,9 @@ class LocationFragment : Fragment() {
 
     companion object {
         const val LOCATION_REQUEST_CODE = 1000
+
+        const val LATITUDE_KEY = "LATITUDE"
+        const val LONGITUDE_KEY = "LONGITUDE"
 
         fun newInstance() = LocationFragment()
     }

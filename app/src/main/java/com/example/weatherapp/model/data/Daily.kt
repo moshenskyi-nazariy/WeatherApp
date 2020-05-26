@@ -6,7 +6,7 @@ data class Daily (
 	@SerializedName("dt") val dateTime : Int,
 	@SerializedName("sunrise") val sunrise : Int,
 	@SerializedName("sunset") val sunset : Int,
-	@SerializedName("temp") val temp : Temp,
+	@SerializedName("temp") val temperature : Temperature,
 	@SerializedName("feels_like") val feelsLike : FeelsLike,
 	@SerializedName("pressure") val pressure : Int,
 	@SerializedName("humidity") val humidity : Int,

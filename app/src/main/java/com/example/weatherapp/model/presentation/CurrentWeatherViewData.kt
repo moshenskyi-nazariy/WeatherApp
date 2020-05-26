@@ -1,8 +1,8 @@
 package com.example.weatherapp.model.presentation
 
 data class CurrentWeatherViewData(
-    val humidity: Int,
-    val pressure: Int,
-    val temperature: Double,
+    override val humidity: Int,
+    override val pressure: Int,
+    override val temperature: Int,
     val icon: String
-)
+) : WeatherViewData

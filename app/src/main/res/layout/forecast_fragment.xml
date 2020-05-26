@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary"
-    tools:context=".location.LocationFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".forecast.ForecastFragment">
 
     <TextView
         android:id="@+id/city_name_tv"
@@ -40,18 +40,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/weekly_forecast"
-        android:layout_width="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/weather_forecast"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/next_button_drawable"
-        android:text="@string/weekly_forecast"
-        android:layout_marginBottom="@dimen/ui_spacing_double"
-        android:padding="@dimen/ui_spacing_single"
+        android:layout_gravity="bottom"
+        app:layout_constraintVertical_bias="1.0"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/current_weather_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

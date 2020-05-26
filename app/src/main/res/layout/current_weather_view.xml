@@ -15,6 +15,7 @@
         android:scaleType="centerCrop"/>
 
     <LinearLayout
+        android:id="@+id/weather_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -39,6 +40,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="24" />
+
+        <TextView
+            android:id="@+id/weekday_tv"
+            style="@style/CurrentWeatherView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:text="Wednesday" />
 
     </LinearLayout>
 
