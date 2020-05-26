@@ -34,5 +34,8 @@ fun mapWeatherResponseToDailyList(weatherResponse: WeatherResponse): List<DailyV
 }
 
 private fun mapDayOfWeek(dateTime: Int): String {
-    return SimpleDateFormat("E", Locale.getDefault()).format(dateTime.toLong())
+    val unixTimeMillis = dateTime.toLong() * MILLIS_IN_SECOND
+    return SimpleDateFormat("E", Locale.ENGLISH).format(unixTimeMillis)
 }
+
+private const val MILLIS_IN_SECOND = 1000

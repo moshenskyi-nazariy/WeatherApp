@@ -11,6 +11,7 @@ interface ApiService {
     fun getWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
+        @Query("units") units: String,
         @Query("appid") appId: String
     ): Single<WeatherResponse>
 

@@ -34,6 +34,6 @@ class Repository : IRepository {
     }
 
     override fun getWeather(lat: Double, lon: Double): Single<WeatherResponse> {
-        return api.getWeather(lat, lon, BuildConfig.API_KEY)
+        return api.getWeather(lat, lon, "metric", BuildConfig.API_KEY)
     }
 }
